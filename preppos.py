@@ -1,7 +1,7 @@
 import os
 
 #port = '5001'
-directory = '/home/cisco/houston-pos-v3/'
+directory = "/home/cisco/houston-pos-v3/"
 version = '3' # main vs main2 etc, for main.py use ''
 
 try:
