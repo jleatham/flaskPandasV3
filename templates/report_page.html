@@ -1,0 +1,81 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='foundation.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='app.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='foundation-icons.css') }}>
+    <link rel="shortcut icon" href={{ url_for('static', filename='favicon.ico') }} />
+    
+  </head>
+  <body>
+
+
+
+
+        {% include 'navigation.html' %}
+
+
+
+
+    <div class="grid-container">
+      <div class="grid-x grid-padding-x">
+        <div class="large-8 medium-8 cell">
+          <h1>{{ title }}</h1>
+        </div>
+      </div>
+
+      <div class="grid-x grid-padding-x">
+        <div class="large-8 medium-8 cell">
+          <div class="callout">
+            <p>{{ description }} </p>
+            <span>Updated: </span><h3><strong>{{ recent }}</strong></h3>
+            <a href="/files/{{ current_filename}}"  target="_blank" class="success button">Generate Report</a><br/>
+            
+            
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-x grid-padding-x">
+        <div class="large-8 medium-8 cell">
+          <h5>Additional Files</h5>
+          <!-- Grid Example -->
+
+            <div class="large-8 medium-8 cell">
+              <div class="primary callout">
+                <p>Current_data above is the main report for all AMs in this segment</p>
+                <p>Monthly reports includes same data as Current_data, seperated by month</p>
+                <p>For each report, click the POS ID to generate email for OneCommercial</p>
+
+                {%- for item in files %}
+                <ul><a href="/files/{{ item }}" target="_blank">{{ item }}</a></ul>
+                {%- endfor %}
+
+                <p>Aggressive Search Files</p>
+                <p>Aggressive Search Reports are an optional report that will include potentially misspelled account names</p>
+                {%- for item in aggfiles %}
+                <ul><a href="/files/{{ item }}" target="_blank">{{ item }}</a></ul>
+                {%- endfor %}
+                
+              </div>
+            </div>
+
+
+      </div>
+    </div>
+
+    <script src={{ url_for('static', filename='vendor/jquery.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/what-input.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.js') }}></script>
+    <script src={{ url_for('static', filename='app.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.core.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.dropdownMenu.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.util.box.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.util.keyboard.js') }}></script>
+    <script src={{ url_for('static', filename='vendor/foundation.util.nest.js') }}></script>
+  </body>
+</html>
