@@ -1051,7 +1051,10 @@ def create_area_reports(ALLCSV,NONERRORCSV,OPLIST):
 
             #create monthly reports per operation
             #explanation for this is in old monthly report function
-            i_df['Date']= pd.to_datetime(i_df['Date']) #to parse the time column
+            
+            
+            i_df['Date']= pd.to_datetime(i_df['Date'], errors='coerce') #to parse the time column
+            i_df = i_df.dropna(subset=['Date']) #get rid of all rows that don't have a date in date column
             min = i_df['Date'].min()
             print('min: '+str(min))
             print('min.year / month:  '+str(min.year)+'     '+str(min.month))
