@@ -17,11 +17,15 @@ def index():
     agg_html_files = []
     #make sure the update doesn't get ran everytime the page is loaded
     curr_time = int(time.time())
-    if curr_time - report_runtime > 500:
-        report_runtime = curr_time
-        recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
-        #print("report date was updated")
-    
+    try:
+        if curr_time - report_runtime > 500:
+            report_runtime = curr_time
+            recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
+            #print("report date was updated")
+    except:
+        recent_date = "Not ran yet"
+        least_recent_date = "Not ran yet" 
+        
     for file in glob.glob(filtered_filepath + '/*.[Hh][Tt][Mm][Ll]'):
         filename = os.path.basename(file)
         if "aggressive" in filename:
