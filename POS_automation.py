@@ -359,12 +359,15 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
     df = master_df[(master_df['End Customer Source Customer Name'].astype(str).isin(json_accounts)) | (master_df['Ship-To Source Customer Name'].astype(str).isin(json_accounts)) | (master_df['Sold-To Source Customer Name'].astype(str).isin(json_accounts)) | (master_df["Salesrep Email"].astype(str).isin(json_email)) | (master_df["Salesrep #"].astype(str).isin(json_email)) ]
     print("done with narrowing search results")
     print("filtered df length: "+str(len(df.index)))
-
+    db_length = len(data)
+    print("items in db = "+str(db_length))
+    time.sleep(3)
     frames = [] #re-initialize frames so we can concat below df's
     frames_non_error = []
-
+    y = 0
     #note, before narrowing down, would have a few issues with below, might still need some TLC later on, e.g., ValueError: cannot set a frame with no defined index and a scalar
     for v in data.values():
+        y += 1
         #can reuse this code elsewhere if : def build_df(v)
         #build_df(v)
 
@@ -421,7 +424,7 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
 
         frames.append(results) #add each results df to list for cancat
         frames_non_error.append(non_error_results)
-        print("finished searching for: "+EMAIL)
+        print(str(y)+" finished searching for: "+EMAIL)
 
     print("finished all searches, adding to CSV")
     #add the respective dfs together using concat
