@@ -1053,10 +1053,15 @@ def create_area_reports(ALLCSV,NONERRORCSV,OPLIST):
             #explanation for this is in old monthly report function
             i_df['Date']= pd.to_datetime(i_df['Date']) #to parse the time column
             min = i_df['Date'].min()
+            print('min: '+str(min))
+            print('min.year / month:  '+str(min.year)+'     '+str(min.month))
             max = i_df['Date'].max()
+            print('max: '+str(max))
+            print('max.year / month:  '+str(max.year)+'     '+str(max.month))
             ym_start= 12*min.year + min.month - 1 
             ym_end= 12*max.year + max.month - 1 
-
+            print('ym_start'+str(ym_start))
+            print('ym_end'+str(ym_end))
             for ym in range( ym_start, ym_end ):
                 y, m = divmod( ym, 12 )
                 df_month = i_df[(i_df['Date'].dt.month == m+1) & (i_df['Date'].dt.year == y)]
