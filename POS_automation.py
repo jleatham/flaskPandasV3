@@ -115,15 +115,19 @@ def get_op_list():
         SL1 = v["SL1"]
         SL1 = SL1.replace(" ","_")
         SL1 = SL1.replace(".","")
+        SL1 = SL1.replace("&","AND")
         SL2 = v["SL2"]
         SL2 = SL2.replace(" ","_")
-        SL2 = SL2.replace(".","")        
+        SL2 = SL2.replace(".","")
+        SL2 = SL2.replace("&","AND")        
         SL3 = v["SL3"]
         SL3 = SL3.replace(" ","_")
-        SL3 = SL3.replace(".","")        
+        SL3 = SL3.replace(".","") 
+        SL3 = SL3.replace("&","AND")       
         SL4 = v["SL4"]
         SL4 = SL4.replace(" ","_")
-        SL4 = SL4.replace(".","")           
+        SL4 = SL4.replace(".","") 
+        SL4 = SL4.replace("&","AND")           
         op_list.append([v["SL1"],v["SL2"],v["SL3"],v["SL4"]])
         op_list1.append([SL1,SL2,SL3,SL4])
 
@@ -152,6 +156,7 @@ def get_op_list():
         SL1_changed = SL1
         SL1_changed = SL1_changed.replace(" ","_")
         SL1_changed = SL1_changed.replace(".","")
+        SL1_changed = SL1_changed.replace("&","AND")
         SL1_new.append([SL1,SL1_changed])
 
     SL2_new= []
@@ -159,6 +164,7 @@ def get_op_list():
         SL2_changed = SL2
         SL2_changed = SL2_changed.replace(" ","_")
         SL2_changed = SL2_changed.replace(".","")
+        SL2_changed = SL2_changed.replace("&","AND")
         SL2_new.append([SL2,SL2_changed])
 
     SL3_new= []
@@ -166,6 +172,7 @@ def get_op_list():
         SL3_changed = SL3
         SL3_changed = SL3_changed.replace(" ","_")
         SL3_changed = SL3_changed.replace(".","")
+        SL3_changed = SL3_changed.replace("&","AND")
         SL3_new.append([SL3,SL3_changed])
 
     SL4_new= []
@@ -173,6 +180,7 @@ def get_op_list():
         SL4_changed = SL4
         SL4_changed = SL4_changed.replace(" ","_")
         SL4_changed = SL4_changed.replace(".","")
+        SL4_changed = SL4_changed.replace("&","AND")
         SL4_new.append([SL4,SL4_changed])
 
     op_list = [SL1_new, SL2_new, SL3_new, SL4_new] 
