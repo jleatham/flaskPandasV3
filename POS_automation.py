@@ -1037,44 +1037,50 @@ def create_area_reports(ALLCSV,NONERRORCSV,OPLIST):
             if (SL_loop == 1):
                 i_df = df[df["SL1"].str.contains(i[0])] 
                 ne_i_df = ne_df[ne_df["SL1"].str.contains(i[0])]
+                print(str(i[0]))
             elif (SL_loop == 2):
                 i_df = df[df["SL2"].str.contains(i[0])] 
-                ne_i_df = ne_df[ne_df["SL2"].str.contains(i[0])]    
+                ne_i_df = ne_df[ne_df["SL2"].str.contains(i[0])] 
+                print(str(i[0]))   
             elif (SL_loop == 3):
                 i_df = df[df["Area"].str.contains(i[0])] 
                 ne_i_df = ne_df[ne_df["Area"].str.contains(i[0])]
+                print(str(i[0]))
             elif (SL_loop == 4):                           
                 i_df = df[df["Operation"].str.contains(i[0])] 
                 ne_i_df = ne_df[ne_df["Operation"].str.contains(i[0])]
+                print(str(i[0]))
             else:
                 print("something wrong with report creating")
 
             #create monthly reports per operation
             #explanation for this is in old monthly report function
             
-            
-            i_df['Date']= pd.to_datetime(i_df['Date'], errors='coerce') #to parse the time column
-            i_df = i_df.dropna(subset=['Date']) #get rid of all rows that don't have a date in date column
-            min = i_df['Date'].min()
-            print('min: '+str(min))
-            print('min.year / month:  '+str(min.year)+'     '+str(min.month))
-            max = i_df['Date'].max()
-            print('max: '+str(max))
-            print('max.year / month:  '+str(max.year)+'     '+str(max.month))
-            ym_start= 12*min.year + min.month - 1 
-            ym_end= 12*max.year + max.month - 1 
-            print('ym_start'+str(ym_start))
-            print('ym_end'+str(ym_end))
-            for ym in range( ym_start, ym_end ):
-                y, m = divmod( ym, 12 )
-                df_month = i_df[(i_df['Date'].dt.month == m+1) & (i_df['Date'].dt.year == y)]
-                if not df_month.empty:
-                    #df_month.set_index('POS ID')
-                    t = datetime(y, m+1, 1)
-                    monthly_csv_filename = filtered_filepath+i[1]+"_"+t.strftime("%Y-%B-monthly-data.csv")
-                    with open(monthly_csv_filename, 'w') as f:
-                        df_month.to_csv(f)            
-                    print("Created file: "+i[1]+"_"+t.strftime("%Y-%B-monthly-data.csv"))  
+            print('length of data: '+str(len(i_df.index)))
+            print('length of ne data: '+str(len(ne_i_df.index)))
+            if ((len(i_df.index) > 0) and (len(ne_i_df.index) > 0)):
+                i_df['Date']= pd.to_datetime(i_df['Date'], errors='coerce') #to parse the time column
+                i_df = i_df.dropna(subset=['Date']) #get rid of all rows that don't have a date in date column
+                min = i_df['Date'].min()
+                print('min: '+str(min))
+                print('min.year / month:  '+str(min.year)+'     '+str(min.month))
+                max = i_df['Date'].max()
+                print('max: '+str(max))
+                print('max.year / month:  '+str(max.year)+'     '+str(max.month))
+                ym_start= 12*min.year + min.month - 1 
+                ym_end= 12*max.year + max.month - 1 
+                print('ym_start'+str(ym_start))
+                print('ym_end'+str(ym_end))
+                for ym in range( ym_start, ym_end ):
+                    y, m = divmod( ym, 12 )
+                    df_month = i_df[(i_df['Date'].dt.month == m+1) & (i_df['Date'].dt.year == y)]
+                    if not df_month.empty:
+                        #df_month.set_index('POS ID')
+                        t = datetime(y, m+1, 1)
+                        monthly_csv_filename = filtered_filepath+i[1]+"_"+t.strftime("%Y-%B-monthly-data.csv")
+                        with open(monthly_csv_filename, 'w') as f:
+                            df_month.to_csv(f)            
+                        print("Created file: "+i[1]+"_"+t.strftime("%Y-%B-monthly-data.csv"))  
 
 
 
