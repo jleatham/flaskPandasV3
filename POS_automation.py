@@ -1233,14 +1233,14 @@ def getCurrentlyProcessingReportsGlobal():
 
 def display_logs():
     x = "<p>Last 100 lines in file:</p><p>...</p>"
-    f = open("/home/cisco/houston-pos/pos_log.out","r")
+    f = open(home_file_path+"pos_log.out","r")
     m = deque(f, maxlen=100)
     for line in m:
         x += "<p>"+line+"</p>"
 
     x += "<p>...</p><p>...</p><p>Logfile from start:</p><p>...</p><p>...</p>"
     f.close
-    f = open("/home/cisco/houston-pos/pos_log.out","r")
+    f = open(home_file_path+"pos_log.out","r")
     lines = f.readlines()
     f.close()
     for line in lines:
