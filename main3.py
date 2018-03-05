@@ -165,9 +165,9 @@ def SL1_reports(SL1_page):
         recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
 
     page = "{0}".format(SL1_page)
-    print("We made it here")
-    print("We got globals"+str(op_list1))
-    print("page we are looking for: "+page)
+    #print("We made it here")
+    #print("We got globals"+str(op_list1))
+    #print("page we are looking for: "+page)
     for i in op_list1:
         page_list_SL1 = "{0}".format(i[0])
 
@@ -210,14 +210,14 @@ def SL2_reports(SL1_page,SL2_page):
         recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
 
     page = "{0}/{1}".format(SL1_page,SL2_page)
-    print("We made it here")
-    print("We got globals"+str(op_list1))
-    print("page we are looking for: "+page)
+    #print("We made it here")
+    #print("We got globals"+str(op_list1))
+    #print("page we are looking for: "+page)
     for i in op_list1:
         page_list_SL2 = "{0}/{1}".format(i[0],i[1])
 
         if page==page_list_SL2:
-            print("went to SL2 if statement")
+            #print("went to SL2 if statement")
             for file in glob.glob(filtered_filepath + '/*.[Hh][Tt][Mm][Ll]'):
                 filename = os.path.basename(file)
                 if "{0}_aggressive".format(i[1]) in filename:
@@ -255,9 +255,9 @@ def SL3_reports(SL1_page,SL2_page,SL3_page):
         recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
 
     page = "{0}/{1}/{2}".format(SL1_page,SL2_page,SL3_page)
-    print("We made it here")
-    print("We got globals"+str(op_list1))
-    print("page we are looking for: "+page)
+    #print("We made it here")
+    #print("We got globals"+str(op_list1))
+    #print("page we are looking for: "+page)
     for i in op_list1:
         page_list_SL3 = "{0}/{1}/{2}".format(i[0],i[1],i[2])
 
@@ -299,12 +299,12 @@ def SL4_reports(SL1_page,SL2_page,SL3_page,SL4_page):
         recent_date,least_recent_date = get_time_frame(all_data_csv_filename)
 
     page = "{0}/{1}/{2}/{3}".format(SL1_page,SL2_page,SL3_page,SL4_page)
-    print("We made it here")
+    #print("We made it here")
     #print("We got globals"+str(op_list1))
-    print("page we are looking for: "+page)
+    #print("page we are looking for: "+page)
     for i in op_list1:
         page_list_SL4 = "{0}/{1}/{2}/{3}".format(i[0],i[1],i[2],i[3])
-        print("iteration : "+page_list_SL4)
+        #print("iteration : "+page_list_SL4)
 
         if page==page_list_SL4:
             for file in glob.glob(filtered_filepath + '/*.[Hh][Tt][Mm][Ll]'):
@@ -336,8 +336,8 @@ def SL4_reports(SL1_page,SL2_page,SL3_page,SL4_page):
 @app.route('/current_data.html',methods=['POST'])
 def get_my_data():
     POS = int(request.form['pos_value'])
-    print(POS)
-    print(type(POS))
+    #print(POS)
+    #print(type(POS))
 
     #####from other scripts
     results_pos_list = []

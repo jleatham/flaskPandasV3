@@ -102,6 +102,9 @@ roomId = "Y2lzY29zcGFyazovL3VzL1JPT00vNjhiNzc1MTAtNjAxNi0xMWU3LWFlN2MtNGJlNjIzOT
 
 
 
+#Used to get the values of all the different teams in the database.  It returns the information in 2 formats.
+#op_list : used when we need to iterate each segment pair based on name and proposed filename(no spaces)
+#op_list1 : used as a list of all the filenames
 def get_op_list():
     if not (os.stat(am_list_json_filename).st_size == 0):
         with open(am_list_json_filename) as data_file:
@@ -111,7 +114,10 @@ def get_op_list():
 
     op_list = [] # used when we need to iterate each segment pair based on name and proposed filename(no spaces)
     op_list1 = [] # used as a list of all the filenames
+    
+    #iterate the json db
     for v in data.values():
+        #these characters don't do well with filenames, so we replace them
         SL1 = v["SL1"]
         SL1 = SL1.replace(" ","_")
         SL1 = SL1.replace(".","")
@@ -128,7 +134,7 @@ def get_op_list():
         SL4 = SL4.replace(" ","_")
         SL4 = SL4.replace(".","") 
         SL4 = SL4.replace("&","AND")           
-        op_list.append([v["SL1"],v["SL2"],v["SL3"],v["SL4"]])
+        op_list.append([v["SL1"],v["SL2"],v["SL3"],v["SL4"]]) #temporarily storing these
         op_list1.append([SL1,SL2,SL3,SL4])
 
 
@@ -136,6 +142,8 @@ def get_op_list():
     SL2_list = []
     SL3_list = []
     SL4_list = []
+    #taking all the list data that has the full path to each team, e.g., [[americas,commercial,csa,swso],[americas,enterprise,etc,etc]]
+    #seperate the lists into type, so SL1_list = [americas,americas,americas], SL2_list = [commercial,commercial,enterprise,enterprise,etc]
     for op in op_list:
         SL1_list.append(op[0])
         SL2_list.append(op[1])
@@ -143,14 +151,15 @@ def get_op_list():
         SL4_list.append(op[3])
 
 
-
+    #get rid of duplicates
     SL1_list = sorted(list(set(SL1_list)))
     SL2_list = sorted(list(set(SL2_list)))
     SL3_list = sorted(list(set(SL3_list)))
     SL4_list = sorted(list(set(SL4_list)))
 
 
-    
+    #for each new list, do the same thing and get rid of weird characters
+
     SL1_new= []
     for SL1 in SL1_list:
         SL1_changed = SL1
@@ -183,6 +192,7 @@ def get_op_list():
         SL4_changed = SL4_changed.replace("&","AND")
         SL4_new.append([SL4,SL4_changed])
 
+    #create a new list: [[[americas,americas]],[[commercial,commercial],[enterprise,enterprise]],[[commercial south area,commerical_south_area],[CEA,etc]]]
     op_list = [SL1_new, SL2_new, SL3_new, SL4_new] 
 
     return op_list,op_list1
@@ -194,7 +204,7 @@ def to_html_v1(ALLCSV, ALLHTML):
     with open(ALLHTML, 'w+') as f:
         results.to_html(f)
 
-
+#take the CSV files in the old pos file path,
 def prepare_test():
     global currentlyProcessingReports
     currentlyProcessingReports = "1"    
@@ -314,32 +324,39 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
                 df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","Posted Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
                 shutil.move(file, old_pos_file_path+filename)
                 print ("processed: "+filename)
+                frames.append(df)
             except Exception as e:
                 print ("file not readable in pandas: "+ file)
                 print (e)
                 print("Trying to fix")
                 #check if csv headers are not 1st line
                 #will rewrite the file and the program will try again next time it checks for new files
-                df2 = pd.read_csv(FILEDATA)
-                i = 0
-                if "POS Transaction ID/Unique ID" not in df.columns:
-                    while i < 4:
-                        df2 = pd.read_csv(FILEDATA,skiprows=[i])
-                        if "POS Transaction ID/Unique ID" not in df2.columns:
-                            print("Couldn't find POS data in row "+str(i))
-                            i += 1
-                        else:
-                            print("Found POS data in row "+str(i))
-                            i = 5
-                            with open(file, 'w') as f:
-                                df2.to_csv(f, index=False)
-                                print("re-wrote file: "+filename)
-                else:
-                    print("headers are correct, not sure the issue")
-                #end check   
+                try:
+                    df2 = pd.read_csv(FILEDATA)
+                    i = 0
+                    if "POS Transaction ID/Unique ID" not in df.columns:
+                        while i < 4:
+                            df2 = pd.read_csv(FILEDATA,skiprows=[i])
+                            if "POS Transaction ID/Unique ID" not in df2.columns:
+                                print("Couldn't find POS data in row "+str(i))
+                                i += 1
+                            else:
+                                print("Found POS data in row "+str(i))
+                                i = 5
+                                with open(file, 'w') as f:
+                                    df2.to_csv(f, index=False)
+                                    print("re-wrote file: "+filename)
+                    else:
+                        print("headers are correct, not sure the issue")
+                    #end check   
+                except Exception as e:
+                    print (e)
+                    print ("could not fix file: "+ file)
+                    msg = "could not fix file: "+ file
+                    send_msg_to_spark(roomId,msg)               
 
             #add newly created dataframe to frames list
-            frames.append(df) #will this work if the name is the same each time?  If not, just create a list with names
+            
             # dynamically populated and then put the df data into each
         else: #file is a duplicate
             print("file already exists in " +old_pos_file_path+": "+filename+"  ...removing")
@@ -947,6 +964,9 @@ def send_link_to_spark(ROOMID):
     msg="To browse older POS files by month: " +server_address
     sparkapi.messages.create(ROOMID, text=msg)
 
+def send_msg_to_spark(ROOMID, msg):
+    sparkapi.messages.create(ROOMID, text=msg)
+
 def create_monthly_csv(FILE):
     df = pd.read_csv(FILE).set_index("POS ID")
     df['Date']= pd.to_datetime(df['Date'])
@@ -1156,7 +1176,8 @@ def create_html_tables():
     ago = now-timedelta(minutes=10)
     #html = """   <script>$(document).change(function(){$('tr').click(function get_my_data(e){var row = e.currentTarget;var cell = row.getElementsByTagName('td');var POS = cell[0].innerHTML;console.log(POS);window.location = "mailto:eiwalsh@cisco.com?subject=Please%20claim%20POS%20order-"+cell[0].innerHTML+"-"+cell[2].innerHTML+"&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Here%20is%20what%20I%20know:%0D%0A%0D%0APOSID:%09:%09"+cell[0].innerHTML+"%0D%0ADATE:%09:%09"+cell[1].innerHTML+"%0D%0AMy%20CCOID:%09:%09"+cell[2].innerHTML+"%0D%0ACredited:%09:%09"+cell[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cell[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cell[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cell[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cell[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cell[5].innerHTML+"%0D%0AValue:%09%09:%09"+cell[6].innerHTML+"%0D%0A";});});</script> """
     html = """ <script>$(document).on('click', 'td', function(e){var cell = e.currentTarget.innerHTML;var row = e.currentTarget.closest('tr');var cells = row.getElementsByTagName('td');var POS = cells[0].innerHTML;if (cell == POS){window.location = "mailto:onecommercial@cisco.com?subject=Please%20claim%20POS%20order-"+cells[0].innerHTML+"-"+cells[2].innerHTML+"&cc=jleatham@cisco.com&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Details:%0D%0A%0D%0APOSID:%09:%09"+cells[0].innerHTML+"%0D%0ADATE:%09:%09"+cells[1].innerHTML+"%0D%0AMy%20CCOID:%09:%09"+cells[2].innerHTML+"%0D%0ACredited:%09:%09"+cells[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cells[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cells[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cells[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cells[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cells[5].innerHTML+"%0D%0AValue:%09%09:%09"+cells[6].innerHTML+"%0D%0A";}});</script> """
-    html2 = """ <script>window.onload = function() {if(!window.location.hash) {window.location = window.location + '#loaded';window.location.reload();}}</script> """
+    #html2 = """ <script>window.onload = function() {if(!window.location.hash) {window.location = window.location + '#loaded';window.location.reload();}}</script> """
+    html2 = """ <script>$(document).on('click', 'td', function(e){var cell = e.currentTarget.innerHTML;var row = e.currentTarget.closest('tr');var cells = row.getElementsByTagName('td');var POS = cells[0].innerHTML;var dollarValue = cells[6].innerHTML;var cellDate = cells[1].innerHTML;var amCredit = cells[3].innerHTML;var date1 = new Date(cellDate);var date2 = new Date();var timeDiff = Math.abs(date2.getTime() - date1.getTime());var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));if ((cell == POS) && (diffDays <= 60) && (dollarValue >= 3000) && (amCredit.indexOf("CDW") === -1) && (amCredit.indexOf("SBTG") === -1)){window.location = "mailto:onecommercial@cisco.com?subject=Please%20claim%20POS%20order-"+cells[0].innerHTML+"-"+cells[2].innerHTML+"&cc=jleatham@cisco.com&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Details:%0D%0A%0D%0APOSID:%09:%09"+cells[0].innerHTML+"%0D%0ADATE:%09:%09"+cells[1].innerHTML+"%0D%0AMy%20CCOID:%09:%09"+cells[2].innerHTML+"%0D%0ACredited:%09:%09"+cells[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cells[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cells[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cells[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cells[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cells[5].innerHTML+"%0D%0AValue:%09%09:%09"+cells[6].innerHTML+"%0D%0A";}else{alert("POS policy: Claim must be within 60 days with a line-item above above 3K or overall deal above 30K.  CDW and SBTG mis-alignments are usually corrected.  Check MBR first before submitting a claim.")}});</script> """
     for file in glob.glob(filtered_filepath + '/*.[Cc][Ss][Vv]'):
         #only create HTML files that were modified recently
         st = os.stat(file)
@@ -1330,7 +1351,8 @@ def real_time_search(account,email,pos,party,searchAction):
 
 
     #html = """   <script>$(document).change(function(){$('tr').click(function get_my_data(e){var row = e.currentTarget;var cell = row.getElementsByTagName('td');var POS = cell[0].innerHTML;console.log(POS);window.location = "mailto:eiwalsh@cisco.com?subject=Please%20claim%20POS%20order-"+cell[0].innerHTML+"-"+cell[2].innerHTML+"&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Here%20is%20what%20I%20know:%0D%0A%0D%0APOSID:%09:%09"+cell[0].innerHTML+"%0D%0ADATE:%09:%09"+cell[1].innerHTML+"%0D%0AMy%20CCOID:%09:%09"+cell[2].innerHTML+"%0D%0ACredited:%09:%09"+cell[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cell[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cell[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cell[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cell[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cell[5].innerHTML+"%0D%0AValue:%09%09:%09"+cell[6].innerHTML+"%0D%0A";});});</script> """
-    html = """ <script>$(document).on('click', 'td', function(e){var cell = e.currentTarget.innerHTML;var row = e.currentTarget.closest('tr');var cells = row.getElementsByTagName('td');var POS = cells[0].innerHTML;if (cell == POS){window.location = "mailto:onecommercial@cisco.com?subject=Please%20claim%20POS%20order-"+cells[0].innerHTML+"&cc=jleatham@cisco.com&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Details:%0D%0A%0D%0APOSID:%09:%09"+cells[0].innerHTML+"%0D%0ADATE:%09:%09"+cells[1].innerHTML+"%0D%0ACredited:%09:%09"+cells[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cells[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cells[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cells[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cells[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cells[5].innerHTML+"%0D%0AValue:%09%09:%09"+cells[6].innerHTML+"%0D%0A";}});</script> """
+    #html = """ <script>$(document).on('click', 'td', function(e){var cell = e.currentTarget.innerHTML;var row = e.currentTarget.closest('tr');var cells = row.getElementsByTagName('td');var POS = cells[0].innerHTML;if (cell == POS){window.location = "mailto:onecommercial@cisco.com?subject=Please%20claim%20POS%20order-"+cells[0].innerHTML+"&cc=jleatham@cisco.com&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Details:%0D%0A%0D%0APOSID:%09:%09"+cells[0].innerHTML+"%0D%0ADATE:%09:%09"+cells[1].innerHTML+"%0D%0ACredited:%09:%09"+cells[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cells[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cells[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cells[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cells[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cells[5].innerHTML+"%0D%0AValue:%09%09:%09"+cells[6].innerHTML+"%0D%0A";}});</script> """
+    html = """ <script>$(document).on('click', 'td', function(e){var cell = e.currentTarget.innerHTML;var row = e.currentTarget.closest('tr');var cells = row.getElementsByTagName('td');var POS = cells[0].innerHTML;var dollarValue = cells[6].innerHTML;var cellDate = cells[1].innerHTML;var amCredit = cells[3].innerHTML;var date1 = new Date(cellDate);var date2 = new Date();var timeDiff = Math.abs(date2.getTime() - date1.getTime());var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));if ((cell == POS) && (diffDays <= 60) && (dollarValue >= 3000) && (amCredit.indexOf("CDW") === -1) && (amCredit.indexOf("SBTG") === -1)){window.location = "mailto:onecommercial@cisco.com?subject=Please%20claim%20POS%20order-"+cells[0].innerHTML+"-"+cells[2].innerHTML+"&cc=jleatham@cisco.com&body=%0D%0AI%20believe%20this%20order%20should%20be%20credited%20to%20me.%20%20Details:%0D%0A%0D%0APOSID:%09:%09"+cells[0].innerHTML+"%0D%0ADATE:%09:%09"+cells[1].innerHTML+"%0D%0AMy%20CCOID:%09:%09"+cells[2].innerHTML+"%0D%0ACredited:%09:%09"+cells[3].innerHTML+"%0D%0AEnd%20customer:%09:%09"+cells[4].innerHTML+"%0D%0AShipped%20to:%09:%09"+cells[7].innerHTML+"%0D%0ASold%20to:%09:%09"+cells[8].innerHTML+"%0D%0AParty%20ID:%09:%09"+cells[9].innerHTML+"%0D%0AProduct%20ID:%09:%09"+cells[5].innerHTML+"%0D%0AValue:%09%09:%09"+cells[6].innerHTML+"%0D%0A";}else{alert("POS policy: Claim must be within 60 days with a line-item above above 3K or overall deal above 30K.  CDW and SBTG mis-alignments are usually corrected.  Check MBR first before submitting a claim.")}});</script> """
     html2 = """ <script>window.onload = function() {if(!window.location.hash) {window.location = window.location + '#loaded';window.location.reload();}}</script> """
 
 
