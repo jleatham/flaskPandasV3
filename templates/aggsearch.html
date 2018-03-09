@@ -118,7 +118,7 @@
                     }
                     if (form_id == 'aggSearchForm'){
                         console.log("This is the aggSearchForm function");
-                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS for errors, could take a couple minutes</p><p>Results will be posted on reports page</p><p>If you find a misspelled account, add it to the account list to include in main report</p>";
+                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS for errors, no need to stay on this page.</p><p>Results will be posted on reports page</p><p>If you find a misspelled account, add it to the account list to include in main report</p>";
                         $form.find( "input[name='account']" ).val(""); //remove the filed input on submit                        
                         $.ajax({
                             url: url,

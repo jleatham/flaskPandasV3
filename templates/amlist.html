@@ -211,7 +211,7 @@
                     });                        
                     } else if (form_id == 'runReport') {
                         console.log("This is the runReport function");
-                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS, please wait</p><p>Results will be posted on reports page</p>";
+                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS, no need to hang out on this page.</p><p>Results will be posted next time you generate a report.</p><p>Estimated time to complete: 5-10 minutes.</p>";
                         $.ajax({
                             url: url,
                             data: {'function':form_id ,'email': email},

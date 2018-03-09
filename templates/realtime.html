@@ -131,7 +131,7 @@
                        
                     if (form_id == 'realTimeSearch') {
                         console.log("This is the realTimeSearch function");
-                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS, please wait</p>";
+                        document.getElementById('display').innerHTML = "<p>Processing 1M+ lines of POS, This might take a couple minutes.</p><p>Stay on this page while report is generating.</p>";
                         $.ajax({
                             url: url,
                             data: {'function':form_id , 'email':email, 'account':account, 'searchAction':searchAction, 'pos':pos,'party':party},
