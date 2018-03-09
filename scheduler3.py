@@ -5,7 +5,7 @@ import re
 import datetime
 import requests
 
-port = '5001'
+port = '5000'
 directory = '/home/cisco/houston-pos-v3/'
 version = '3' # main vs main2 etc, for main.py use ''
 

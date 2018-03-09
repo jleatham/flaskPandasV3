@@ -533,4 +533,4 @@ def realtimepath(path):
 if __name__ == "__main__":
     am_list_json = flask_load_json_to_mem(am_list_json_filename) #load json into memory
     #app.run(host='0.0.0.0',debug=True)
-    app.run(host='0.0.0.0',threaded=True, port=5001)
+    app.run(host='0.0.0.0',threaded=True, port=5000)
