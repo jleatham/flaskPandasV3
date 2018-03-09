@@ -321,7 +321,7 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
                     text = f.read()
                 FILEDATA = StringIO(text)
                 df = pd.DataFrame() # create empty dataframe                       
-                df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","Posted Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
+                df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","POS Trx SCA Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
                 shutil.move(file, old_pos_file_path+filename)
                 print ("processed: "+filename)
                 frames.append(df)
@@ -420,7 +420,7 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
         # old search:   results = df[(df['End Customer Source Customer Name'].astype(str).isin(ACCOUNTS) | df['Ship-To Source Customer Name'].astype(str).isin(ACCOUNTS) | df['Sold-To Source Customer Name'].astype(str).isin(ACCOUNTS)) & (~df["Salesrep Email"].str.contains(EMAIL)) & (~df["Salesrep #"].astype(int) == repNumber ) & (~df['End Customer Source Customer Name'].astype(str).isin(FALSE))] 
         # the old search above was difficult to get the logic right, so I broke it up
         #results.index.names = ['POS ID']
-        results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
+        results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','POS Trx SCA Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
         #results.loc[:,'Sort Here'] = EMAIL
         results["Sort Here"] = EMAIL
         #results.loc[:,'Region Sort'] = REGION
@@ -435,7 +435,7 @@ def to_csv_from_json_v2(FILES,ALLCSV,NONERRORCSV):
 
         non_error_results = df[(df["Salesrep Email"].str.contains(EMAIL)) | (df["Salesrep #"].astype(str).str.contains(repNumber)) ]#& len(df.index)<20
         #non_error_results.index.names = ['POS ID']
-        non_error_results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID', 'POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)                    
+        non_error_results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','POS Trx SCA Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID', 'POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)                    
         non_error_results["Sort Here"] = EMAIL
         #non_error_results.loc[:,'Sort Here'] = EMAIL
         non_error_results["Region"] = REGION
@@ -687,7 +687,7 @@ def update_single_am_results(EMAIL,ALLCSV):
                 text = f.read()
             FILEDATA = StringIO(text)
             df = pd.DataFrame() # create empty dataframe                       
-            df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","Posted Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
+            df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","POS Trx SCA Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
         except Exception as e:
             print ("file not readable in pandas: "+ file)
             print (e)
@@ -714,7 +714,7 @@ def update_single_am_results(EMAIL,ALLCSV):
     # old search:   results = df[(df['End Customer Source Customer Name'].astype(str).isin(ACCOUNTS) | df['Ship-To Source Customer Name'].astype(str).isin(ACCOUNTS) | df['Sold-To Source Customer Name'].astype(str).isin(ACCOUNTS)) & (~df["Salesrep Email"].str.contains(EMAIL)) & (~df["Salesrep #"].astype(int) == repNumber ) & (~df['End Customer Source Customer Name'].astype(str).isin(FALSE))] 
     # the old search above was difficult to get the logic right, so I broke it up
     #results.index.names = ['POS ID']
-    results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
+    results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','POS Trx SCA Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
     #results.loc[:,'Sort Here'] = EMAIL
     results["Sort Here"] = EMAIL
     #results.loc[:,'Region Sort'] = REGION
@@ -889,7 +889,7 @@ def create_aggressive_search_csv_for_am(EMAIL,DISTANCE):
                 text = f.read()
             FILEDATA = StringIO(text)
             df = pd.DataFrame() # create empty dataframe                       
-            df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","Posted Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
+            df = pd.read_csv(FILEDATA,low_memory=False, usecols=["POS Transaction ID/Unique ID","POS Trx SCA Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name","Salesrep #"])
         except Exception as e:
             print ("file not readable in pandas: "+ file)
             print (e)
@@ -917,7 +917,7 @@ def create_aggressive_search_csv_for_am(EMAIL,DISTANCE):
     for account in final_pos_list:
         results = df[(df['End Customer Source Customer Name'].astype(str).str.contains(account[0])) | (df['Ship-To Source Customer Name'].astype(str).str.contains(account[0])) | (df['Sold-To Source Customer Name'].astype(str).str.contains(account[0])) ]
         #results.index.names = ['POS ID']
-        results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
+        results.rename(columns = {'POS Transaction ID/Unique ID':'POS ID','POS Trx SCA Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
         #results.rename(columns = {'Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode','Salesrep Name':'AM Credited'}, inplace=True)
         results["Sort Here"] = EMAIL
         results["Account Name"] = str(account[1])
@@ -1314,7 +1314,7 @@ def real_time_search(account,email,pos,party,searchAction):
 
     all_files = glob.glob(os.path.join(old_pos_file_path, "*.[Cc][Ss][Vv]"))     # advisable to use os.path.join as this makes concatenation OS independent
     #print("loading dfs")
-    df_from_each_file = (pd.read_csv(f, encoding='cp1252',low_memory=False, usecols=["POS Transaction ID/Unique ID","Posted Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name"]) for f in all_files)
+    df_from_each_file = (pd.read_csv(f, encoding='cp1252',low_memory=False, usecols=["POS Transaction ID/Unique ID","POS Trx SCA Date",	'POS Split Adjusted Value USD', 'Product ID','POS SCA Mode','Ship-To Source Customer Name','Sold-To Source Customer Name',"End Customer Source Customer Name","End Customer CR Party ID","Salesrep Email","Salesrep Name"]) for f in all_files)
     #df_from_each_file = (pd.read_csv(f, encoding='cp1252',low_memory=False).set_index("POS Transaction ID/Unique ID") for f in all_files)    
     #df   = pd.concat(df_from_each_file, ignore_index=True)
     #print("concating dfs")
@@ -1330,7 +1330,7 @@ def real_time_search(account,email,pos,party,searchAction):
         results = df[(df['End Customer Source Customer Name'].str.contains(account, na=False) | df['Ship-To Source Customer Name'].str.contains(account, na=False) | df['Sold-To Source Customer Name'].str.contains(account, na=False)) & df["Salesrep Email"].str.contains(email, na=False) & df["End Customer CR Party ID"].str.contains(party, na=False) & df["POS Transaction ID/Unique ID"].str.contains(pos, na=False)]
     else:
         results = df[(df['End Customer Source Customer Name'].str.contains(account, na=False) | df['Ship-To Source Customer Name'].str.contains(account, na=False) | df['Sold-To Source Customer Name'].str.contains(account, na=False)) | df["Salesrep Email"].str.contains(email, na=False) | df["End Customer CR Party ID"].str.contains(party, na=False) | df["POS Transaction ID/Unique ID"].str.contains(pos, na=False)]
-    results.rename(columns = {"POS Transaction ID/Unique ID":'POS ID','Posted Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode'}, inplace=True)
+    results.rename(columns = {"POS Transaction ID/Unique ID":'POS ID','POS Trx SCA Date':'Date','POS Split Adjusted Value USD':'$$$','Ship-To Source Customer Name':'Ship-To','Sold-To Source Customer Name':'Sold-To','End Customer Source Customer Name':'End Customer','End Customer CR Party ID':'Party ID','POS SCA Mode':'Mode'}, inplace=True)
     results["Sort Here"] = "Not In Use"
     results = results[['POS ID','Date','Sort Here','Salesrep Name','End Customer','Product ID','$$$','Ship-To','Sold-To','Party ID','Mode']]
     results['Date'] = pd.to_datetime(results['Date'], errors='coerce')
